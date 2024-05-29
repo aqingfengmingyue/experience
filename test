@@ -1,1 +1,12 @@
-123
+1.清除包中的缓存
+conda clean --all
+2.conda-forge 是一个社区驱动的 Conda 包管理频道，提供了大量经过验证和维护的包。使用这个频道可以确保安装的是最新且兼容的版本。
+conda install -c conda-forge opencv
+3.添加镜像源。
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --set show_channel_urls yes
+4.移除默认源
+conda config --remove channels defaults
+5.更新SSL证书
+conda update openssl
