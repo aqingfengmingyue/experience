@@ -1,0 +1,24 @@
+1.清除包中的缓存
+conda clean --all
+2.用conda-forge 下载包，是一个社区驱动的 Conda 包管理频道，提供了大量经过验证和维护的包。使用这个频道可以确保安装的是最新且兼容的版本。
+conda install -c conda-forge opencv
+3.添加镜像源。
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --set show_channel_urls yes
+4.移除默认源
+conda config --remove channels defaults
+5.更新SSL证书
+conda update openssl
+6.arr.reshape()并不改变arr的值，若要重塑arr应将arr.reshape()的值赋给arr
+7.在conda下创建新环境。
+conda create -n name python=3.7
+8.可以使用如下命令查看当前有哪些环境。
+conda env list
+9.退出当前环境。
+conda deactivate
+10.删除环境。
+conda remove -n test --all  #test 为环境名。
+11.指定路径下创建环境。
+conda create --prefix=F:\condaenv\env_name python=3.7 
+
