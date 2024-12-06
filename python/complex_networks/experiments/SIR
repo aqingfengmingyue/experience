@@ -1,0 +1,54 @@
+import networkx as nx
+
+
+# 定义SIR模型
+def SIR_model(G, beta, gamma, initial_infected, max_iter=100):
+    status = {node: 0 for node in G.nodes()}  # 节点状态初始化: 所有节点初始为易感者 (S)
+    for node in initial_infected:
+        status[node] = 1  # 初始感染节点设为感染者 (I)
+    infected_nodes = set(initial_infected)  # 初始感染者
+    recoverd_ndes = set()
+    susceptible_nodes = set(G.nodes) - infected_nodes  # 易感节点
+    for _ in range(max_iter):
+        new_status = status.copy()
+        newly_infected = set()
+        newly_recovered = set()
+        for node in infected_nodes:
+            uninfected_nodes = susceptible_nodes & set(G.neighbors(node))  # 获取邻居节点中的未感染节点
+            for uninfected in uninfected_nodes:
+                if np.random.rand() < beta:  # 根据传播率感染邻居
+                    new_status[uninfected] = 1
+                    newly_infected.add(uninfected)
+            if np.random.rand() < gamma:  # 根据康复率康复
+                new_status[node] = 2
+                newly_recovered.add(node)
+                if node in newly_infected:
+                    newly_infected.remove(node)         
+            susceptible_nodes = susceptible_nodes - newly_infected
+            susceptible_nodes.update(newly_recovered)
+        infected_nodes.update(newly_infected)   # 更新被感染节点的数量
+        status = new_status
+        # 没有状态的节点数量小于总节点数量的5%则返回节点状态
+        if len([un_status for un_status in status.values() if un_status == 0]) / len(G.nodes())  <= 0.05:
+            return status
+    return status
+
+
+# 计算每个节点的重要性
+def calculate_node_importance(G, beta, gamma, max_iter=100, num_simulations=10):
+    node_importance = {node: 0 for node in G.nodes()}  # 初始化每个节点的影响力为0
+    
+    for node in G.nodes():
+        total_infected = 0
+        for _ in range(num_simulations):  # 对每个节点进行多次模拟，求平均感染数
+            status_node = SIR_model(G, beta, gamma, [node], max_iter)
+            infected_count = len([status for status in status_node.values() if status == 1])  # 1表示被感染
+            total_infected += infected_count
+        node_importance[node] = total_infected / num_simulations  # 计算平均影响力
+    
+    return node_importance  # 存储每个节点可感染节点的数量
+
+
+# 排序并返回节点的重要性排名
+def get_node_ranking(node_importance):
+    return dict(sorted(node_importance.items(), key=lambda iterm: iterm[1], reverse=True))
