@@ -1,0 +1,31 @@
+import networkx as nx
+import random
+
+
+# SI模型的传播参数
+def SI_model(G, initial_infected, infection_probability, max_steps=20):
+
+    infected_count = [len(initial_infected)]  # 用来记录每个时间步感染节点的数量
+    infected_nodes = set(initial_infected)  # 初始感染者
+    susceptible_nodes = set(G.nodes) - infected_nodes  # 易感节点
+    
+    # 模拟传播过程
+    for t in range(max_steps):
+        newly_infected = set()
+        
+        # 遍历每个感染节点，并尝试传染其未感染的邻居
+        for node in infected_nodes:
+            uninfected_nodes = susceptible_nodes & set(G.neighbors(node))  # 获取邻居节点中的未感染节点
+            for uninfected in uninfected_nodes:
+                if random.random() < infection_probability:
+                    newly_infected.add(uninfected)
+            susceptible_nodes -= newly_infected  # 更新易感节点
+            
+        # 更新感染节点集
+        infected_nodes.update(newly_infected)
+        num_infected = len(G.nodes()) - len(susceptible_nodes)
+        infected_count.append(num_infected)
+        # 当易感节点为0或小于总节点数的5%退出迭代
+        if len(susceptible_nodes) / len(G.nodes()) <= 0.05:
+            return infected_count
+    return infected_count
